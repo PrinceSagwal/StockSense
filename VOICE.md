@@ -31,8 +31,6 @@ This document is your complete, battle-tested recording guide and word-for-word 
 
 #### 🗣️ Voiceover:
 > *"Every year, warehouse operations lose billions due to misplaced inventory, unrecorded shrinkage, and fragmented spreadsheets. When stock numbers in the office don't match what's physically on the warehouse racks, customer shipments get delayed, orders fail, and business trust is broken.*
->
-> *Meet **StockSense** — a centralized, real-time enterprise inventory intelligence platform built on the MERN stack. Designed from the ground up for both inventory executives and warehouse floor workers, it delivers instant visibility, double-entry auditability, and live WebSocket synchronization across every single stock movement."*
 
 ---
 
