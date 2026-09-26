@@ -23,7 +23,7 @@ export const sendEmail = async ({ to, subject, html, text }) => {
       to,
       subject,
       text: text || '',
-      html: html || `<p>${text}</p>`
+      html: html || `<p>${text || ''}</p>`
     });
 
     return { success: true, info };
