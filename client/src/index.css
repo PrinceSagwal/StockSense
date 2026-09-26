@@ -1,0 +1,201 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   StockSense Design System (Dark & Light Theme)
+   Palette: Black / White / Yellow / Red / Green
+   Style: Minimalism + Glassmorphism
+   ============================================ */
+
+:root {
+  /* Light Theme (Default clean slate) */
+  --color-bg:          #F8FAFC;
+  --color-surface:     #FFFFFF;
+  --color-surface-2:   #F1F5F9;
+  --color-surface-3:   #E2E8F0;
+  --color-border:      rgba(0, 0, 0, 0.08);
+  --color-border-2:    rgba(0, 0, 0, 0.14);
+
+  /* Brand Colors */
+  --color-yellow:      #F59E0B;
+  --color-yellow-dim:  rgba(245, 158, 11, 0.12);
+  --color-yellow-glow: rgba(245, 158, 11, 0.25);
+  --color-red:         #EF4444;
+  --color-red-dim:     rgba(239, 68, 68, 0.12);
+  --color-green:       #10B981;
+  --color-green-dim:   rgba(16, 185, 129, 0.12);
+
+  /* Text */
+  --text-primary:      #0F172A;
+  --text-secondary:    #475569;
+  --text-muted:        #94A3B8;
+  --text-accent:       #D97706;
+
+  /* Glass Effect */
+  --glass-bg:          rgba(255, 255, 255, 0.85);
+  --glass-border:      rgba(0, 0, 0, 0.08);
+  --glass-hover:       rgba(0, 0, 0, 0.03);
+}
+
+.dark {
+  /* Dark Theme (Sleek Obsidian & Midnight Slate) */
+  --color-bg:          #0A0F1E;
+  --color-surface:     #111827;
+  --color-surface-2:   #1E293B;
+  --color-surface-3:   #283548;
+  --color-border:      rgba(255, 255, 255, 0.08);
+  --color-border-2:    rgba(255, 255, 255, 0.14);
+
+  /* Brand Colors */
+  --color-yellow:      #F5C518;
+  --color-yellow-dim:  rgba(245, 197, 24, 0.14);
+  --color-yellow-glow: rgba(245, 197, 24, 0.3);
+  --color-red:         #DC2626;
+  --color-red-dim:     rgba(220, 38, 38, 0.15);
+  --color-green:       #16A34A;
+  --color-green-dim:   rgba(22, 163, 74, 0.15);
+
+  /* Text */
+  --text-primary:      #F8FAFC;
+  --text-secondary:    #94A3B8;
+  --text-muted:        #64748B;
+  --text-accent:       #F5C518;
+
+  /* Glass Effect */
+  --glass-bg:          rgba(17, 24, 39, 0.75);
+  --glass-border:      rgba(255, 255, 255, 0.08);
+  --glass-hover:       rgba(255, 255, 255, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-yellow); }
+
+/* ============================================
+   Glassmorphism Utilities
+   ============================================ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-strong {
+  background: var(--color-surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-2);
+}
+
+.glass-yellow {
+  background: var(--color-yellow-dim);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 197, 24, 0.25);
+}
+
+/* ============================================
+   Glow Effects
+   ============================================ */
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.3), 0 0 60px rgba(245, 197, 24, 0.1);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3), 0 0 60px rgba(220, 38, 38, 0.1);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.3), 0 0 60px rgba(22, 163, 74, 0.1);
+}
+
+/* ============================================
+   Yellow accent text
+   ============================================ */
+.text-accent {
+  color: var(--text-accent);
+}
+
+/* ============================================
+   Card Hover Lift
+   ============================================ */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================
+   Input Base
+   ============================================ */
+.input-base {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-2);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 10px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.input-base::placeholder {
+  color: var(--text-muted);
+}
+.input-base:focus {
+  border-color: var(--color-yellow);
+  box-shadow: 0 0 0 3px var(--color-yellow-dim);
+}
+
+/* ============================================
+   Button Yellow Primary
+   ============================================ */
+.btn-yellow {
+  background: #F5C518;
+  color: #0A0F1E;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.btn-yellow:hover {
+  background: #FDE68A;
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.35);
+  transform: translateY(-1px);
+}
+.btn-yellow:active {
+  transform: translateY(0);
+}
