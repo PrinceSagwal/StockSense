@@ -26,7 +26,10 @@ const ForgotPassword = () => {
     try {
       setIsLoading(true);
       const res = await authAPI.forgotPassword(email);
-      toast.success(res.message || 'OTP sent to your email / SMS!');
+      if (res?.otp) {
+        setOtp(res.otp);
+      }
+      toast.success(res.message || 'OTP sent to your email / device!');
       setStep(2);
     } catch (err) {
       toast.error(err.message || 'Failed to send OTP');

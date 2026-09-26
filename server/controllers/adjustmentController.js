@@ -1,4 +1,7 @@
 import StockAdjustment from '../models/StockAdjustment.js';
+import Product from '../models/Product.js';
+import Warehouse from '../models/Warehouse.js';
+import Location from '../models/Location.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { applyStockAdjustment } from '../utils/stockEngine.js';
 
@@ -47,12 +50,12 @@ export const getAdjustments = asyncHandler(async (req, res) => {
 // @route   POST /api/adjustments
 // @access  Private
 export const createAdjustment = asyncHandler(async (req, res) => {
-    const { product, warehouse, location, countedQuantity, reason } = req.body;
+    let { product, warehouse, location, countedQuantity, reason } = req.body;
 
-    if (!product || !warehouse || !location || countedQuantity === undefined) {
+    if (!product || countedQuantity === undefined || countedQuantity === null || isNaN(Number(countedQuantity))) {
         return res.status(400).json({
             success: false,
-            message: 'Please provide product, warehouse, location, and counted quantity'
+            message: 'Please provide target product and valid counted quantity'
         });
     }
 
@@ -61,6 +64,53 @@ export const createAdjustment = asyncHandler(async (req, res) => {
             success: false,
             message: 'Counted quantity cannot be negative'
         });
+    }
+
+    const prodDoc = await Product.findById(product);
+    if (!prodDoc) {
+        return res.status(404).json({
+            success: false,
+            message: 'Target product not found'
+        });
+    }
+
+    // Auto-resolve warehouse if not provided
+    if (!warehouse) {
+        if (prodDoc.stockPerLocation && prodDoc.stockPerLocation.length > 0) {
+            warehouse = prodDoc.stockPerLocation[0].warehouse;
+            location = location || prodDoc.stockPerLocation[0].location;
+        } else {
+            let defaultWh = await Warehouse.findOne({ isActive: true }).sort({ createdAt: 1 });
+            if (!defaultWh) {
+                defaultWh = await Warehouse.create({
+                    name: 'Main Distribution Center',
+                    code: 'WH-01'
+                });
+            }
+            warehouse = defaultWh._id;
+        }
+    }
+
+    // Auto-resolve location if not provided
+    if (!location && warehouse) {
+        const existingLocEntry = prodDoc.stockPerLocation?.find(
+            (e) => e.warehouse?.toString() === warehouse.toString()
+        );
+        if (existingLocEntry?.location) {
+            location = existingLocEntry.location;
+        } else {
+            let defaultLoc = await Location.findOne({ warehouse, isActive: true }).sort({ createdAt: 1 });
+            if (!defaultLoc) {
+                const whDoc = await Warehouse.findById(warehouse);
+                defaultLoc = await Location.create({
+                    name: 'General Floor Storage',
+                    code: `${whDoc?.code || 'WH'}-GEN`,
+                    warehouse,
+                    type: 'floor'
+                });
+            }
+            location = defaultLoc._id;
+        }
     }
 
     const io = req.app.get('io');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import useDeliveryStore from '../../store/useDeliveryStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
@@ -152,16 +153,16 @@ const DeliveryList = () => {
                           </Link>
                           {d.status === 'ready' && (
                             <button
-                              onClick={() => {
-                                if (
-                                  window.confirm(
-                                    `Validate delivery ${d.reference}? Stock will decrease.`
-                                  )
-                                ) {
-                                  validateDelivery(d._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Validate Delivery',
+                                  message: `Validate delivery order ${d.reference}? Physical stock will decrease immediately.`,
+                                  confirmText: 'Validate Delivery',
+                                  type: 'success'
+                                });
+                                if (ok) validateDelivery(d._id);
                               }}
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                               title="Validate Delivery"
                             >
                               <CheckCircle size={16} />
@@ -169,12 +170,16 @@ const DeliveryList = () => {
                           )}
                           {['draft', 'waiting', 'ready'].includes(d.status) && (
                             <button
-                              onClick={() => {
-                                if (window.confirm(`Cancel delivery order ${d.reference}?`)) {
-                                  cancelDelivery(d._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Cancel Delivery Order',
+                                  message: `Are you sure you want to cancel delivery order ${d.reference}? This action cannot be undone.`,
+                                  confirmText: 'Cancel Delivery',
+                                  type: 'danger'
+                                });
+                                if (ok) cancelDelivery(d._id);
                               }}
-                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Cancel Delivery"
                             >
                               <XCircle size={16} />

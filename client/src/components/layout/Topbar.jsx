@@ -97,7 +97,7 @@ const Topbar = () => {
           >
             <Bell size={18} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-slate-950 text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse shadow-xs">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F5A623] text-slate-950 text-[10px] font-bold rounded-full flex items-center justify-center notification-badge-pulse shadow-xs">
                 {unreadCount}
               </span>
             )}

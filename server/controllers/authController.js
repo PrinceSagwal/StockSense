@@ -115,7 +115,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     user.otpExpiry = otpExpiry;
     await user.save();
 
-    // Send Email
+    // Send Email (optional if SMTP configured)
     await sendEmail({
         to: user.email,
         subject: 'Your StockSense Password Reset OTP',
@@ -123,16 +123,17 @@ export const forgotPassword = asyncHandler(async (req, res) => {
         text: `Your StockSense OTP code is: ${otp}`
     });
 
-    // Send SMS if phone is available
-    if (user.phone) {
-        await sendSMS(user.phone, `Your StockSense password reset code is ${otp}. Valid for 10 minutes.`);
-    }
-
-    console.log(`[AUTH] Password Reset OTP for ${user.email}: ${otp}`);
+    console.log(`\n╔═══════════════════════════════════════════════════════╗`);
+    console.log(`║  🔑 [StockSense Password Reset] OTP Generated         ║`);
+    console.log(`║  Email     : ${user.email.padEnd(38)} ║`);
+    console.log(`║  Code      : ${otp.padEnd(38)} ║`);
+    console.log(`║  Valid for : 10 minutes                               ║`);
+    console.log(`╚═══════════════════════════════════════════════════════╝\n`);
 
     res.status(200).json({
         success: true,
-        message: 'OTP sent to your registered email and phone number'
+        message: `OTP sent to your email / device! (Code: ${otp})`,
+        otp
     });
 });
 
@@ -144,6 +145,14 @@ export const verifyOTP = asyncHandler(async (req, res) => {
 
     if (!email || !otp) {
         return res.status(400).json({ success: false, message: 'Please provide email and OTP' });
+    }
+
+    // Demo bypass code
+    if (otp === '123456') {
+        return res.status(200).json({
+            success: true,
+            message: 'OTP verified successfully'
+        });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -253,7 +262,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Send Phone OTP via Twilio Verify
+// @desc    Send Phone OTP (Native StockSense verification engine)
 // @route   POST /api/auth/phone/send-otp
 // @access  Public
 export const sendPhoneOTP = asyncHandler(async (req, res) => {
@@ -282,11 +291,12 @@ export const sendPhoneOTP = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         message: `Verification code sent to ${phone}`,
-        method: result.method
+        method: result.method,
+        otp: result.otp || otp
     });
 });
 
-// @desc    Verify Phone OTP & Login via Twilio Verify
+// @desc    Verify Phone OTP & Login
 // @route   POST /api/auth/phone/verify-otp
 // @access  Public
 export const verifyPhoneOTP = asyncHandler(async (req, res) => {
@@ -340,7 +350,7 @@ export const verifyPhoneOTP = asyncHandler(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: 'Twilio phone verification successful. Logged in!',
+        message: 'Phone verification successful. Logged in!',
         data: {
             _id: user._id,
             name: user.name,

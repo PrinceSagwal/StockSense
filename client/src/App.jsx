@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 
 // Layout & Protected Route
 import ProtectedRoute from './components/layout/ProtectedRoute';
+import UniversalConfirmModal from './components/common/UniversalConfirmModal';
 
 // Public Pages
 import Home from './pages/Home/Home';
@@ -46,10 +47,15 @@ function App() {
           style: {
             background: isDark ? '#111827' : '#FFFFFF',
             color: isDark ? '#F8FAFC' : '#0F172A',
-            borderRadius: '12px',
-            fontSize: '13px',
+            borderRadius: '16px',
+            fontSize: '14.5px',
+            fontWeight: '500',
+            padding: '14px 18px',
             border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E2E8F0',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.15)',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+            minWidth: '280px',
+            maxWidth: '380px',
+            lineHeight: '1.5',
           },
           success: {
             iconTheme: { primary: '#10B981', secondary: '#fff' },
@@ -59,6 +65,9 @@ function App() {
           },
         }}
       />
+
+      {/* Universal Confirmation Modal */}
+      <UniversalConfirmModal />
 
       <Routes>
         {/* Landing Page — loads directly at "/" */}

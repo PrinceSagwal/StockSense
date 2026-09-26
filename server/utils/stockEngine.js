@@ -239,15 +239,15 @@ export const applyStockAdjustment = async (data, user, io) => {
     (e) => e.location?.toString() === data.location?.toString()
   );
 
-  const systemQuantity = product.stockQuantity;
-  const locationSystemQty = locationEntry ? locationEntry.quantity : 0;
+  const systemQuantity = product.stockQuantity || 0;
+  const locationSystemQty = locationEntry ? locationEntry.quantity : systemQuantity;
   const difference = countedQuantity - locationSystemQty;
-
-  product.stockQuantity += difference;
 
   if (locationEntry) {
     locationEntry.quantity = countedQuantity;
+    product.stockQuantity += difference;
   } else {
+    product.stockQuantity = countedQuantity;
     product.stockPerLocation.push({
       location: data.location,
       warehouse: data.warehouse,

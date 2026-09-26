@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useProductStore from '../../store/useProductStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
 import Modal from '../../components/common/Modal';
@@ -78,10 +79,16 @@ const ProductDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm(`Delete product ${selectedProduct.name}?`)) {
-      await deleteProduct(id);
-      navigate('/products');
-    }
+    const ok = await confirmDialog({
+      title: 'Delete Product',
+      message: `Delete product "${selectedProduct.name}" (${selectedProduct.sku})? This action cannot be undone.`,
+      confirmText: 'Delete Product',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    await deleteProduct(id);
+    navigate('/products');
   };
 
   return (
