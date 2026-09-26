@@ -6,69 +6,55 @@
 @tailwind utilities;
 
 /* ============================================
-   StockSense Design System (Dark & Light Theme)
-   Palette: Black / White / Yellow / Red / Green
-   Style: Minimalism + Glassmorphism
+   StockSense Design Tokens (Enterprise SaaS)
+   Strict Palette:
+   - Primary accent:   #F5A623 (amber/yellow)
+   - Secondary accent: #22C55E (green)
+   - Danger:           #EF4444 (red)
+   - Warning:          #F59E0B (amber)
+   - Info/Link:        #06B6D4 (cyan)
+   - Background:       #F1F5F9 (light gray-blue)
+   - Surface:          #FFFFFF (card background)
+   - Sidebar:          #FFFFFF
+   - Text primary:     #0F172A (near black)
+   - Text secondary:   #64748B (slate gray)
+   - Border:           #E2E8F0
    ============================================ */
 
 :root {
-  /* Light Theme (Default clean slate) */
-  --color-bg:          #F8FAFC;
+  --color-primary:     #F5A623;
+  --color-secondary:   #22C55E;
+  --color-danger:      #EF4444;
+  --color-warning:     #F59E0B;
+  --color-info:        #06B6D4;
+
+  --color-bg:          #F1F5F9;
   --color-surface:     #FFFFFF;
-  --color-surface-2:   #F1F5F9;
-  --color-surface-3:   #E2E8F0;
-  --color-border:      rgba(0, 0, 0, 0.08);
-  --color-border-2:    rgba(0, 0, 0, 0.14);
+  --color-sidebar:     #FFFFFF;
+  --color-border:      #E2E8F0;
+  --color-border-subtle: rgba(226, 232, 240, 0.8);
 
-  /* Brand Colors */
-  --color-yellow:      #F59E0B;
-  --color-yellow-dim:  rgba(245, 158, 11, 0.12);
-  --color-yellow-glow: rgba(245, 158, 11, 0.25);
-  --color-red:         #EF4444;
-  --color-red-dim:     rgba(239, 68, 68, 0.12);
-  --color-green:       #10B981;
-  --color-green-dim:   rgba(16, 185, 129, 0.12);
-
-  /* Text */
   --text-primary:      #0F172A;
-  --text-secondary:    #475569;
+  --text-secondary:    #64748B;
   --text-muted:        #94A3B8;
-  --text-accent:       #D97706;
 
-  /* Glass Effect */
-  --glass-bg:          rgba(255, 255, 255, 0.85);
-  --glass-border:      rgba(0, 0, 0, 0.08);
-  --glass-hover:       rgba(0, 0, 0, 0.03);
+  --glass-card:        rgba(255, 255, 255, 0.85);
+  --glass-card-border: rgba(226, 232, 240, 0.9);
 }
 
 .dark {
-  /* Dark Theme (Sleek Obsidian & Midnight Slate) */
   --color-bg:          #0A0F1E;
   --color-surface:     #111827;
-  --color-surface-2:   #1E293B;
-  --color-surface-3:   #283548;
-  --color-border:      rgba(255, 255, 255, 0.08);
-  --color-border-2:    rgba(255, 255, 255, 0.14);
+  --color-sidebar:     #0D1322;
+  --color-border:      #1E293B;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
 
-  /* Brand Colors */
-  --color-yellow:      #F5C518;
-  --color-yellow-dim:  rgba(245, 197, 24, 0.14);
-  --color-yellow-glow: rgba(245, 197, 24, 0.3);
-  --color-red:         #DC2626;
-  --color-red-dim:     rgba(220, 38, 38, 0.15);
-  --color-green:       #16A34A;
-  --color-green-dim:   rgba(22, 163, 74, 0.15);
-
-  /* Text */
   --text-primary:      #F8FAFC;
   --text-secondary:    #94A3B8;
   --text-muted:        #64748B;
-  --text-accent:       #F5C518;
 
-  /* Glass Effect */
-  --glass-bg:          rgba(17, 24, 39, 0.75);
-  --glass-border:      rgba(255, 255, 255, 0.08);
-  --glass-hover:       rgba(255, 255, 255, 0.06);
+  --glass-card:        rgba(17, 24, 39, 0.85);
+  --glass-card-border: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -88,7 +74,7 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ============================================
@@ -96,106 +82,156 @@ body {
    ============================================ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-yellow); }
+::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.25); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #F5A623; }
 
 /* ============================================
-   Glassmorphism Utilities
+   Micro-interactions & Keyframe Animations
    ============================================ */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+
+/* Page Route Transition (Fade In 200ms) */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.glass-strong {
-  background: var(--color-surface);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--color-border-2);
+.page-enter {
+  animation: pageFadeIn 200ms ease-out forwards;
 }
 
-.glass-yellow {
-  background: var(--color-yellow-dim);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 197, 24, 0.25);
+/* Restock Banner Pulsing Left Border */
+@keyframes alertBorderPulse {
+  0%, 100% {
+    border-left-color: #EF4444;
+    box-shadow: -3px 0 10px rgba(239, 68, 68, 0.25);
+  }
+  50% {
+    border-left-color: rgba(239, 68, 68, 0.4);
+    box-shadow: -1px 0 4px rgba(239, 68, 68, 0.05);
+  }
 }
 
-/* ============================================
-   Glow Effects
-   ============================================ */
-.glow-yellow {
-  box-shadow: 0 0 20px rgba(245, 197, 24, 0.3), 0 0 60px rgba(245, 197, 24, 0.1);
+.alert-pulse-border {
+  animation: alertBorderPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.glow-red {
-  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3), 0 0 60px rgba(220, 38, 38, 0.1);
+/* Login Animated Radial Amber Pulse (8s Loop) */
+@keyframes amberRadialPulse {
+  0% {
+    background-position: 0% 50%;
+    transform: scale(1) translate(-50%, -50%);
+    opacity: 0.45;
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: scale(1.15) translate(-45%, -48%);
+    opacity: 0.75;
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: scale(1) translate(-50%, -50%);
+    opacity: 0.45;
+  }
 }
 
-.glow-green {
-  box-shadow: 0 0 20px rgba(22, 163, 74, 0.3), 0 0 60px rgba(22, 163, 74, 0.1);
+.login-radial-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.16) 0%, rgba(245, 166, 35, 0.04) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  border-radius: 999px;
+  animation: amberRadialPulse 8s ease-in-out infinite;
+  z-index: 0;
 }
 
-/* ============================================
-   Yellow accent text
-   ============================================ */
-.text-accent {
-  color: var(--text-accent);
+/* Hero Underline Draw Animation */
+@keyframes drawUnderline {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
 }
 
-/* ============================================
-   Card Hover Lift
-   ============================================ */
-.card-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.hero-underline-draw {
+  position: relative;
+  display: inline-block;
 }
 
-/* ============================================
-   Input Base
-   ============================================ */
-.input-base {
-  width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-2);
-  border-radius: 10px;
-  color: var(--text-primary);
-  font-size: 14px;
-  padding: 10px 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-}
-.input-base::placeholder {
-  color: var(--text-muted);
-}
-.input-base:focus {
-  border-color: var(--color-yellow);
-  box-shadow: 0 0 0 3px var(--color-yellow-dim);
+.hero-underline-draw::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 4px;
+  background: #F5A623;
+  border-radius: 2px;
+  animation: drawUnderline 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* ============================================
-   Button Yellow Primary
-   ============================================ */
-.btn-yellow {
-  background: #F5C518;
-  color: #0A0F1E;
-  font-weight: 700;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+/* Global Button Lift on Hover */
+.btn-lift {
+  transition: transform 150ms ease, box-shadow 150ms ease;
 }
-.btn-yellow:hover {
-  background: #FDE68A;
-  box-shadow: 0 0 20px rgba(245, 197, 24, 0.35);
+.btn-lift:hover {
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(245, 166, 35, 0.35);
 }
-.btn-yellow:active {
+.btn-lift:active {
   transform: translateY(0);
+}
+
+/* Global Card Hover Shadow Transition */
+.card-hover-elevate {
+  transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+.card-hover-elevate:hover {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+}
+
+/* Notification Bell Pulse Dot */
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.notification-badge-pulse {
+  animation: gentlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Frosted Glass Class */
+.frosted-glass {
+  background: var(--glass-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-card-border);
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

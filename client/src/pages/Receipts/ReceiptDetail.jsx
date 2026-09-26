@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import useReceiptStore from '../../store/useReceiptStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
 import { ArrowLeft, CheckCircle, XCircle, Clock, Check } from 'lucide-react';
@@ -54,18 +55,20 @@ const ReceiptDetail = () => {
   const currentStepIdx = steps.indexOf(selectedReceipt.status);
 
   const handleValidate = async () => {
-    if (
-      window.confirm(
-        `Validate ${selectedReceipt.reference}? This will permanently update inventory levels.`
-      )
-    ) {
-      const updatedLines = selectedReceipt.lines.map((l, idx) => ({
-        ...l,
-        receivedQty: Number(receivedQtys[idx] ?? l.expectedQty)
-      }));
-      await validateReceipt(id, updatedLines);
-      fetchReceipt(id);
-    }
+    const ok = await confirmDialog({
+      title: 'Validate Receipt',
+      message: `Validate ${selectedReceipt.reference}? This will permanently update inventory levels.`,
+      confirmText: 'Validate Receipt',
+      type: 'success'
+    });
+    if (!ok) return;
+
+    const updatedLines = selectedReceipt.lines.map((l, idx) => ({
+      ...l,
+      receivedQty: Number(receivedQtys[idx] ?? l.expectedQty)
+    }));
+    await validateReceipt(id, updatedLines);
+    fetchReceipt(id);
   };
 
   const handleMarkReady = async () => {
@@ -74,10 +77,16 @@ const ReceiptDetail = () => {
   };
 
   const handleCancel = async () => {
-    if (window.confirm('Cancel this receipt?')) {
-      await cancelReceipt(id);
-      fetchReceipt(id);
-    }
+    const ok = await confirmDialog({
+      title: 'Cancel Receipt',
+      message: `Cancel receipt ${selectedReceipt.reference}? This action cannot be undone.`,
+      confirmText: 'Cancel Receipt',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    await cancelReceipt(id);
+    fetchReceipt(id);
   };
 
   return (

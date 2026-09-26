@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import useDeliveryStore from '../../store/useDeliveryStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
 import { ArrowLeft, CheckCircle, XCircle, Check } from 'lucide-react';
@@ -41,14 +42,16 @@ const DeliveryDetail = () => {
   const currentStepIdx = steps.indexOf(selectedDelivery.status);
 
   const handleValidate = async () => {
-    if (
-      window.confirm(
-        `Validate delivery order ${selectedDelivery.reference}? This will decrease warehouse stock permanently.`
-      )
-    ) {
-      await validateDelivery(id);
-      fetchDelivery(id);
-    }
+    const ok = await confirmDialog({
+      title: 'Validate Delivery Order',
+      message: `Validate delivery order ${selectedDelivery.reference}? This will decrease warehouse stock permanently.`,
+      confirmText: 'Validate Delivery',
+      type: 'success'
+    });
+    if (!ok) return;
+
+    await validateDelivery(id);
+    fetchDelivery(id);
   };
 
   const handleMarkReady = async () => {
@@ -57,10 +60,16 @@ const DeliveryDetail = () => {
   };
 
   const handleCancel = async () => {
-    if (window.confirm(`Cancel delivery order ${selectedDelivery.reference}?`)) {
-      await cancelDelivery(id);
-      fetchDelivery(id);
-    }
+    const ok = await confirmDialog({
+      title: 'Cancel Delivery Order',
+      message: `Cancel delivery order ${selectedDelivery.reference}? This action cannot be undone.`,
+      confirmText: 'Cancel Delivery',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    await cancelDelivery(id);
+    fetchDelivery(id);
   };
 
   return (

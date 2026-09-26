@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useAdjustmentStore from '../../store/useAdjustmentStore';
 import useProductStore from '../../store/useProductStore';
 import useWarehouseStore from '../../store/useWarehouseStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import Spinner from '../../components/common/Spinner';
 import Pagination from '../../components/common/Pagination';
 import { Sliders, CheckCircle, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
@@ -63,13 +64,15 @@ const AdjustmentPage = () => {
       return;
     }
 
-    if (
-      !window.confirm(
-        `Apply stock adjustment of ${difference >= 0 ? `+${difference}` : difference} for ${
-          selectedProduct?.name
-        }?`
-      )
-    ) {
+    const confirmed = await confirmDialog({
+      title: 'Apply Stock Adjustment',
+      message: `Apply stock adjustment of ${difference >= 0 ? `+${difference}` : difference} for ${
+        selectedProduct?.name
+      }? This will update the inventory ledger immediately.`,
+      confirmText: 'Apply Adjustment',
+      type: difference >= 0 ? 'success' : 'warning'
+    });
+    if (!confirmed) {
       return;
     }
 
@@ -140,8 +143,14 @@ const AdjustmentPage = () => {
               <select
                 value={selectedWarehouseId}
                 onChange={(e) => {
-                  setSelectedWarehouseId(e.target.value);
-                  setSelectedLocationId('');
+                  const whId = e.target.value;
+                  setSelectedWarehouseId(whId);
+                  const wh = warehouses.find((w) => w._id === whId);
+                  if (wh?.locations && wh.locations.length > 0) {
+                    setSelectedLocationId(wh.locations[0]._id);
+                  } else {
+                    setSelectedLocationId('');
+                  }
                 }}
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >

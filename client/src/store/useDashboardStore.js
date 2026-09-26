@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import dashboardAPI from '../api/dashboardAPI';
-import toast from 'react-hot-toast';
 
 export const useDashboardStore = create((set, get) => ({
   kpis: {
@@ -14,6 +13,23 @@ export const useDashboardStore = create((set, get) => ({
   recentMoves: [],
   stockChart: [],
   lowStockProducts: [],
+
+  // Manager specific state
+  inventoryValuation: [],
+  operationsBreakdown: { receipts: {}, deliveries: {}, transfers: {} },
+  warehouseDistribution: [],
+  stockHealth: { healthy: 0, low: 0, outOfStock: 0, total: 0 },
+
+  // Staff specific state
+  taskQueue: {
+    receipts: { pending: 0, ready: 0 },
+    deliveries: { pending: 0, ready: 0 },
+    transfers: { pending: 0, ready: 0 }
+  },
+  dailyActivity: [],
+  recentTasks: { receipts: [], deliveries: [], transfers: [] },
+  operationBreakdown: [],
+
   isLoading: false,
 
   fetchKPIs: async () => {
@@ -60,15 +76,69 @@ export const useDashboardStore = create((set, get) => ({
     }
   },
 
-  fetchAllDashboardData: async () => {
+  // Manager fetches
+  fetchManagerData: async () => {
+    try {
+      const [valRes, opsRes, whRes, healthRes] = await Promise.allSettled([
+        dashboardAPI.getInventoryValuation(),
+        dashboardAPI.getOperationsBreakdown(),
+        dashboardAPI.getWarehouseDistribution(),
+        dashboardAPI.getStockHealth()
+      ]);
+
+      set({
+        inventoryValuation: valRes.status === 'fulfilled' && valRes.value?.success ? valRes.value.data : [],
+        operationsBreakdown: opsRes.status === 'fulfilled' && opsRes.value?.success ? opsRes.value.data : { receipts: {}, deliveries: {}, transfers: {} },
+        warehouseDistribution: whRes.status === 'fulfilled' && whRes.value?.success ? whRes.value.data : [],
+        stockHealth: healthRes.status === 'fulfilled' && healthRes.value?.success ? healthRes.value.data : { healthy: 0, low: 0, outOfStock: 0, total: 0 }
+      });
+    } catch (err) {
+      console.error('Failed to fetch manager dashboard data:', err);
+    }
+  },
+
+  // Staff fetches
+  fetchStaffData: async () => {
+    try {
+      const [queueRes, actRes, taskRes, opRes] = await Promise.allSettled([
+        dashboardAPI.getStaffTaskQueue(),
+        dashboardAPI.getStaffDailyActivity(),
+        dashboardAPI.getStaffRecentTasks(),
+        dashboardAPI.getStaffOperationBreakdown()
+      ]);
+
+      set({
+        taskQueue: queueRes.status === 'fulfilled' && queueRes.value?.success ? queueRes.value.data : {
+          receipts: { pending: 0, ready: 0 },
+          deliveries: { pending: 0, ready: 0 },
+          transfers: { pending: 0, ready: 0 }
+        },
+        dailyActivity: actRes.status === 'fulfilled' && actRes.value?.success ? actRes.value.data : [],
+        recentTasks: taskRes.status === 'fulfilled' && taskRes.value?.success ? taskRes.value.data : { receipts: [], deliveries: [], transfers: [] },
+        operationBreakdown: opRes.status === 'fulfilled' && opRes.value?.success ? opRes.value.data : []
+      });
+    } catch (err) {
+      console.error('Failed to fetch staff dashboard data:', err);
+    }
+  },
+
+  fetchAllDashboardData: async (role) => {
     set({ isLoading: true });
     try {
-      await Promise.allSettled([
+      const promises = [
         get().fetchKPIs(),
         get().fetchRecentMoves(),
         get().fetchStockChart(),
         get().fetchLowStock()
-      ]);
+      ];
+
+      if (role === 'inventory_manager') {
+        promises.push(get().fetchManagerData());
+      } else {
+        promises.push(get().fetchStaffData());
+      }
+
+      await Promise.allSettled(promises);
     } finally {
       set({ isLoading: false });
     }

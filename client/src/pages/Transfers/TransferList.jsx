@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import useTransferStore from '../../store/useTransferStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import useWarehouseStore from '../../store/useWarehouseStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
@@ -147,16 +148,16 @@ const TransferList = () => {
                         <div className="inline-flex items-center gap-1.5">
                           {['draft', 'ready', 'waiting'].includes(t.status) && (
                             <button
-                              onClick={() => {
-                                if (
-                                  window.confirm(
-                                    `Execute internal transfer ${t.reference}? Stock will move.`
-                                  )
-                                ) {
-                                  validateTransfer(t._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Execute Transfer',
+                                  message: `Execute internal transfer ${t.reference}? Physical stock will be relocated between locations.`,
+                                  confirmText: 'Execute Transfer',
+                                  type: 'info'
+                                });
+                                if (ok) validateTransfer(t._id);
                               }}
-                              className="p-1.5 text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                              className="p-1.5 text-violet-600 hover:bg-violet-50 rounded-lg transition-colors cursor-pointer"
                               title="Validate Transfer"
                             >
                               <CheckCircle size={16} />
@@ -164,12 +165,16 @@ const TransferList = () => {
                           )}
                           {['draft', 'waiting', 'ready'].includes(t.status) && (
                             <button
-                              onClick={() => {
-                                if (window.confirm(`Cancel transfer ${t.reference}?`)) {
-                                  cancelTransfer(t._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Cancel Transfer',
+                                  message: `Are you sure you want to cancel transfer ${t.reference}? This action cannot be undone.`,
+                                  confirmText: 'Cancel Transfer',
+                                  type: 'danger'
+                                });
+                                if (ok) cancelTransfer(t._id);
                               }}
-                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Cancel Transfer"
                             >
                               <XCircle size={16} />

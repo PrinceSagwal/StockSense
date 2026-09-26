@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import useReceiptStore from '../../store/useReceiptStore';
+import { confirmDialog } from '../../store/useConfirmStore';
 import StatusBadge from '../../components/common/StatusBadge';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
@@ -154,12 +155,16 @@ const ReceiptList = () => {
                           </Link>
                           {r.status === 'ready' && (
                             <button
-                              onClick={() => {
-                                if (window.confirm(`Validate receipt ${r.reference}? Stock will increase.`)) {
-                                  validateReceipt(r._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Validate Receipt',
+                                  message: `Validate receipt ${r.reference}? Stock will increase automatically.`,
+                                  confirmText: 'Validate Receipt',
+                                  type: 'success'
+                                });
+                                if (ok) validateReceipt(r._id);
                               }}
-                              className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
                               title="Validate Receipt"
                             >
                               <CheckCircle size={16} />
@@ -167,12 +172,16 @@ const ReceiptList = () => {
                           )}
                           {['draft', 'waiting', 'ready'].includes(r.status) && (
                             <button
-                              onClick={() => {
-                                if (window.confirm(`Cancel receipt ${r.reference}?`)) {
-                                  cancelReceipt(r._id);
-                                }
+                              onClick={async () => {
+                                const ok = await confirmDialog({
+                                  title: 'Cancel Receipt',
+                                  message: `Are you sure you want to cancel receipt ${r.reference}? This action cannot be undone.`,
+                                  confirmText: 'Cancel Receipt',
+                                  type: 'danger'
+                                });
+                                if (ok) cancelReceipt(r._id);
                               }}
-                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Cancel Receipt"
                             >
                               <XCircle size={16} />
