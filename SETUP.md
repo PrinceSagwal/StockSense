@@ -77,11 +77,13 @@ EMAIL_USER=your_email@gmail.com
 # Get it: Google Account → Security → 2-Step Verification → App passwords
 EMAIL_PASS=xxxx_xxxx_xxxx_xxxx
 
-# ─── Twilio (OTP via SMS) ──────────────────────────────────────
+# ─── Twilio (Verify & SMS) ────────────────────────────────────
 # Get from Twilio Console (twilio.com/console)
 TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE_NUMBER=+1234567890
+# Twilio Verify Service SID (Optional, for Verify v2 API)
+TWILIO_VERIFY_SERVICE_SID=VAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # ─── Client URL (CORS) ─────────────────────────────────────────
 CLIENT_URL=http://localhost:5173
